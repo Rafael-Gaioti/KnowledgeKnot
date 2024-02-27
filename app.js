@@ -20,18 +20,9 @@ app.get('/', (req, res) => {
     res.render('home');
 })
 
-app.get('/createapost', async (req, res) => {
-    const post = new Post({ title: 'Im a post', description: 'post description' });
-    await post.save()
-        .then(savedPost => {
-            console.log('Post criado com sucesso:', savedPost);
-            res.send(savedPost);
-        })
-        .catch(error => {
-            console.error('Erro ao criar o post:', error);
-            res.status(500).send('Erro ao criar o post');
-        });;
-    //res.send(post)
+app.get('/posts', async (req, res) => {
+    const posts = await Post.find({});
+    res.render('posts/index', {posts})
 })
 
 app.listen(3000, () => {
