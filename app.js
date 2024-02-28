@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const methodOverride = require('method-override');
 const path = require('path');
 const Post = require('./models/post')
 
@@ -16,6 +17,9 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride('_method'));
+
 app.get('/', (req, res) => {
     res.render('home');
 })
@@ -23,6 +27,38 @@ app.get('/', (req, res) => {
 app.get('/posts', async (req, res) => {
     const posts = await Post.find({});
     res.render('posts/index', {posts})
+})
+
+app.get('/posts/new', (req, res) => {
+    res.render('posts/new')
+})
+
+app.post('/posts', async (req, res) => {
+    const post = new Post (req.body.post);
+    await post.save();
+    res.redirect(`posts/${post.id}`);
+})
+
+app.get('/posts/:id', async (req, res) => {
+    const post = await Post.findById(req.params.id)
+    res.render('posts/show', {post})
+})
+
+app.get('/posts/:id/edit', async (req, res) => {
+    const post = await Post.findById(req.params.id)
+    res.render('posts/edit', {post})
+})
+
+app.put('/posts/:id', async (req, res) => {
+    const {id} = req.params;
+    const post = await Post.findByIdAndUpdate(id, {...req.body.post})
+    res.redirect(`/posts/${post.id}`);
+})
+
+app.delete('/posts/:id/delete', async (req, res) => {
+    const {id} = req.params;
+    await Post.findByIdAndDelete(id);
+    res.redirect('/posts')
 })
 
 app.listen(3000, () => {
