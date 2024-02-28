@@ -1,17 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post Details</title>
-</head>
-<body>
-    <h1><%= post.title %></h1>
-    <p><%= post.description %></p>
-    <p>Criado em - <%= post.createAt %></p>
+<% layout('layouts/boilerplate') %>
 
-    <p> <form action="/posts/<%= post.id %>/delete?_method=DELETE" method="POST"> <button>Delete</button></form> </p>
-    <p> <a href="/posts/<%= post.id %>/edit">Edit</a> </p>
-    <a href="/posts">Back to all Posts</a>
-</body>
-</html>
+<h1><%= post.title %></h1>
+<p><%= post.description %></p>
+<p>Criado em - <%= post.createAt %></p>
+
+<p> <form action="/posts/<%= post.id %>/delete?_method=DELETE" method="POST"> <button>Delete</button></form> </p>
+<p> <a href="/posts/<%= post.id %>/edit">Edit</a> </p>
+<a href="/posts">Back to all Posts</a>
