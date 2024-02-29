@@ -26,9 +26,14 @@ app.get('/', (req, res) => {
     res.render('home');
 })
 
+function postFormattedDate(dateString) {
+    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'};
+    return new Date(dateString).toLocaleDateString('pt-PT', options);
+}
+
 app.get('/posts', async (req, res) => {
     const posts = await Post.find({});
-    res.render('posts/index', {posts})
+    res.render('posts/index', {posts: posts, postFormattedDate: postFormattedDate})
 })
 
 app.get('/posts/new', (req, res) => {
@@ -43,7 +48,7 @@ app.post('/posts', async (req, res) => {
 
 app.get('/posts/:id', async (req, res) => {
     const post = await Post.findById(req.params.id)
-    res.render('posts/show', {post})
+    res.render('posts/show', {post: post, formattedDate: postFormattedDate})
 })
 
 app.get('/posts/:id/edit', async (req, res) => {
