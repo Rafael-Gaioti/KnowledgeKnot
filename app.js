@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const ejsMate = require('ejs-mate')
+const catchAsync = require('./utils/catchAsync');
+const expressError = require('./utils/ExpressError')
 const path = require('path');
 const Post = require('./models/post')
 
@@ -31,41 +33,52 @@ function postFormattedDate(dateString) {
     return new Date(dateString).toLocaleDateString('pt-PT', options);
 }
 
-app.get('/posts', async (req, res) => {
+app.get('/posts', catchAsync(async (req, res) => {
     const posts = await Post.find({});
     res.render('posts/index', {posts: posts, postFormattedDate: postFormattedDate})
-})
+}))
 
 app.get('/posts/new', (req, res) => {
     res.render('posts/new')
 })
 
-app.post('/posts', async (req, res) => {
+app.post('/posts', catchAsync(async (req, res) => {
     const post = new Post (req.body.post);
     await post.save();
     res.redirect(`posts/${post.id}`);
-})
+}))
 
-app.get('/posts/:id', async (req, res) => {
+app.get('/posts/:id', catchAsync(async (req, res) => {
     const post = await Post.findById(req.params.id)
     res.render('posts/show', {post: post, formattedDate: postFormattedDate})
-})
+}))
 
-app.get('/posts/:id/edit', async (req, res) => {
+app.get('/posts/:id/edit', catchAsync(async (req, res) => {
     const post = await Post.findById(req.params.id)
     res.render('posts/edit', {post})
-})
+}))
 
-app.put('/posts/:id', async (req, res) => {
+app.put('/posts/:id', catchAsync(async (req, res) => {
     const {id} = req.params;
     const post = await Post.findByIdAndUpdate(id, {...req.body.post})
     res.redirect(`/posts/${post.id}`);
-})
+}))
 
-app.delete('/posts/:id/delete', async (req, res) => {
+app.delete('/posts/:id/delete', catchAsync(async (req, res) => {
     const {id} = req.params;
     await Post.findByIdAndDelete(id);
     res.redirect('/posts')
+}))
+
+app.all('*', (req, res, next) => {
+    throw new expressError('Not Found!', 404);
+})
+
+app.use((err, req, res, next) => {
+    const { statusCode = 500 } = err;
+    if(!err.message) err.message = 'something went wrong';
+
+    res.status(statusCode).render('error', { err });
 })
 
 app.listen(3000, () => {
