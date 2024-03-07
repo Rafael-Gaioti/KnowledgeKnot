@@ -1,11 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
-const ejsMate = require('ejs-mate')
+const ejsMate = require('ejs-mate');
+const { postSchema } = require('./schemas')
 const catchAsync = require('./utils/catchAsync');
 const expressError = require('./utils/ExpressError')
 const path = require('path');
-const Post = require('./models/post')
+const Post = require('./models/post');
+const ExpressError = require('./utils/ExpressError');
 
 mongoose.connect('mongodb://localhost:27017/knowledgeknot', {});
 
@@ -33,6 +35,17 @@ function postFormattedDate(dateString) {
     return new Date(dateString).toLocaleDateString('pt-PT', options);
 }
 
+const validateRequest = (req, res, next) => {
+    const { error } = postSchema.validate(req.body);
+
+    if(error) {
+        const msg = error.details.map(el => el.message).join(',');
+        throw new ExpressError(msg, 400);
+    } else {
+        next();
+    }
+};
+
 app.get('/posts', catchAsync(async (req, res) => {
     const posts = await Post.find({});
     res.render('posts/index', {posts: posts, postFormattedDate: postFormattedDate})
@@ -42,7 +55,7 @@ app.get('/posts/new', (req, res) => {
     res.render('posts/new')
 })
 
-app.post('/posts', catchAsync(async (req, res) => {
+app.post('/posts', validateRequest, catchAsync(async (req, res) => {
     const post = new Post (req.body.post);
     await post.save();
     res.redirect(`posts/${post.id}`);
@@ -58,7 +71,7 @@ app.get('/posts/:id/edit', catchAsync(async (req, res) => {
     res.render('posts/edit', {post})
 }))
 
-app.put('/posts/:id', catchAsync(async (req, res) => {
+app.put('/posts/:id', validateRequest, catchAsync(async (req, res) => {
     const {id} = req.params;
     const post = await Post.findByIdAndUpdate(id, {...req.body.post})
     res.redirect(`/posts/${post.id}`);
@@ -75,7 +88,7 @@ app.all('*', (req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
-    const { statusCode = 500 } = err;
+    const { statusCode } = err;
     if(!err.message) err.message = 'something went wrong';
 
     res.status(statusCode).render('error', { err });
