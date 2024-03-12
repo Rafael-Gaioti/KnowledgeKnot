@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Post = require('../models/post')
-const {titles, descriptions, generateRandomDate} = require('./seedhelpers');
+const {titles, bodies, generateRandomDate} = require('./seedhelpers');
 
 mongoose.connect('mongodb://localhost:27017/knowledgeknot', {});
 
@@ -14,12 +14,12 @@ const seedDB = async () => {
     await Post.deleteMany({});
     for(let i = 0; i <= 10; i++) {
         const randomTitle = titles[Math.floor(Math.random() * titles.length)];
-        const randomDescription = descriptions[Math.floor(Math.random() * descriptions.length)];
+        const randomBody = bodies[Math.floor(Math.random() * bodies.length)];
         const randomDate = generateRandomDate();
 
         const post = new Post ({
             title: randomTitle,
-            description: randomDescription,
+            body: randomBody,
             createAt: randomDate,
         })
         await post.save();

@@ -1,16 +1,47 @@
 <% layout('layouts/boilerplate') %>
 
-<div class="container mt-5">
-    <div class="post">
-        <h1 class="post-title display-6"><%= post.title %></h1>
-        <p class="post-description lead"><%= post.description %></p>
-        <p class="post-date text-muted">Criado em: <%= formattedDate(post.createAt) %></p>
-    </div>
-    <div class="post-actions display-6 mt-3"">
-        <form action="/posts/<%= post.id %>/delete?_method=DELETE" class="d-inline" method="POST">
-            <button type="submit" class="btn btn-danger">Deletar</button>
+<div class="row">
+    <div class="row col-6 offset-3">
+        <div class="post">
+            <h1 class="post-title display-6"><%= post.title %></h1>
+            <p class="post-body lead mt-3"><%= post.body %></p>
+            <p class="post-date text-muted">Criado em: <%= formattedDate(post.createAt) %></p>
+        </div>
+        <div class="post-actions display-6 mt-3"">
+            <form action="/posts/<%= post.id %>/delete?_method=DELETE" class="d-inline" method="POST">
+                <button type="submit" class="btn btn-danger">Deletar</button>
+            </form>
+            <a href="/posts/<%= post.id %>/edit" class="btn btn-primary">Editar</a>
+        </div>
+    
+        <div class="post">
+            <h2 class="mt-5 display-7" style="font-weight: 300;">Comentários</h2>
+        </div>
+        <form action="/posts/<%= post.id %>/comments" method="POST" novalidate class="validate-form mt-3">
+            <div class="mb-3">
+                <label for="commentText" class="form-label">Novo Comentário</label>
+                <textarea class="form-control" id="commentText" name="comment[body]" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-success mb-3">Comentar</button>
         </form>
-        <a href="/posts/<%= post.id %>/edit" class="btn btn-primary">Editar</a>
+
+        <% for(let comment of post.comments) { %>
+            <div class="card mb-3">
+
+                <div class="card-body">
+                    <p class="mb-0"> <%= comment.body %> </p>   
+                    
+                    <form action="/posts/<%= post.id %>/comments/<%= comment._id %>?_method=DELETE" method="POST">
+                        <button class="btn btn-danger mt-2">Deletar</button>
+                    </form>
+                </div>
+            </div>
+        <% } %>
+
+
     </div>
+
 </div>
+
+
 

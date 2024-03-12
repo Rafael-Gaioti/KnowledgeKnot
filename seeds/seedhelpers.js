@@ -11,7 +11,7 @@ const titles = [
     "Problema que estou enfrentando"
 ];
 
-const descriptions = [
+const bodies = [
     "Isso é muito interessante!",
     "Alguém pode me ajudar com isso?",
     "Confira as últimas notícias do mundo da tecnologia",
@@ -33,7 +33,7 @@ function generateRandomDate() {
 module.exports = {
     generateRandomDate: generateRandomDate,
     titles: titles,
-    descriptions: descriptions,
+    bodies: bodies,
 }
 
 
