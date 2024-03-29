@@ -37,17 +37,25 @@ router.get('/new', (req, res) => {
 router.post('/', validatePost, catchAsync(async (req, res) => {
     const post = new Post (req.body.post);
     await post.save();
+    req.flash('success', 'Post criado com sucesso!');
     res.redirect(`posts/${post.id}`);
 }))
 
 router.get('/:id', catchAsync(async (req, res) => {
     const post = await Post.findById(req.params.id).populate('comments');
-    console.log(post);
+    if(!post) {
+        req.flash('error', 'Post não encontrado!');
+        return res.redirect('/posts');
+    }
     res.render('posts/show', {post: post, formattedDate: postFormattedDate})
 }))
 
 router.get('/:id/edit', catchAsync(async (req, res) => {
     const post = await Post.findById(req.params.id)
+    if(!post) {
+        req.flash('error', 'Post não encontrado!');
+        return res.redirect('/posts');
+    }
     res.render('posts/edit', {post})
 }))
 
