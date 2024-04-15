@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-
 const catchAsync = require('../utils/catchAsync');
 const expressError = require('../utils/ExpressError')
+const {isLoggedIn} = require('../middleware');
 
 const Post = require('../models/post');
 const Comment = require('../models/comment');
@@ -30,11 +30,11 @@ router.get('/', catchAsync(async (req, res) => {
     res.render('posts/index', {posts: posts, postFormattedDate: postFormattedDate})
 }))
 
-router.get('/new', (req, res) => {
+router.get('/new', isLoggedIn, (req, res) => {
     res.render('posts/new')
 })
 
-router.post('/', validatePost, catchAsync(async (req, res) => {
+router.post('/', isLoggedIn, validatePost, catchAsync(async (req, res) => {
     const post = new Post (req.body.post);
     await post.save();
     req.flash('success', 'Post criado com sucesso!');
@@ -50,7 +50,7 @@ router.get('/:id', catchAsync(async (req, res) => {
     res.render('posts/show', {post: post, formattedDate: postFormattedDate})
 }))
 
-router.get('/:id/edit', catchAsync(async (req, res) => {
+router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
     const post = await Post.findById(req.params.id)
     if(!post) {
         req.flash('error', 'Post não encontrado!');
@@ -65,7 +65,7 @@ router.put('/:id', validatePost, catchAsync(async (req, res) => {
     res.redirect(`/posts/${post.id}`);
 }))
 
-router.delete('/:id/delete', catchAsync(async (req, res) => {
+router.delete('/:id/delete', isLoggedIn, catchAsync(async (req, res) => {
     const {id} = req.params;
     await Post.findByIdAndDelete(id);
     res.redirect('/posts')
