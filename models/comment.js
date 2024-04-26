@@ -11,6 +11,11 @@ const commentSchema = new Schema({
         default: Date.now(),
         required: true,
     },
+    author: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
     replies: [{
         type: Schema.Types.ObjectId,
         ref: 'Comment',

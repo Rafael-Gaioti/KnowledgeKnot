@@ -1,29 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const catchAsync = require('../utils/catchAsync');
-const expressError = require('../utils/ExpressError')
-const {isLoggedIn} = require('../middleware');
+const {isLoggedIn, isAuthor, validatePost} = require('../middleware');
 
 const Post = require('../models/post');
-const Comment = require('../models/comment');
-
-const { postSchema } = require('../schemas')
-
-const validatePost = (req, res, next) => {
-    const { error } = postSchema.validate(req.body);
-
-    if(error) {
-        const msg = error.details.map(el => el.message).join(',');
-        throw new expressError(msg, 400);
-    } else {
-        next();
-    }
-};
 
 function postFormattedDate(dateString) {
     const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'};
     return new Date(dateString).toLocaleDateString('pt-PT', options);
 }
+
 
 router.get('/', catchAsync(async (req, res) => {
     const posts = await Post.find({});
@@ -36,13 +22,19 @@ router.get('/new', isLoggedIn, (req, res) => {
 
 router.post('/', isLoggedIn, validatePost, catchAsync(async (req, res) => {
     const post = new Post (req.body.post);
+    post.author = req.user._id;
     await post.save();
     req.flash('success', 'Post criado com sucesso!');
     res.redirect(`posts/${post.id}`);
 }))
 
 router.get('/:id', catchAsync(async (req, res) => {
-    const post = await Post.findById(req.params.id).populate('comments');
+    const post = await Post.findById(req.params.id).populate({
+        path: 'comments', 
+        populate: {
+            path: 'author', 
+        },
+    }).populate('author');
     if(!post) {
         req.flash('error', 'Post não encontrado!');
         return res.redirect('/posts');
@@ -50,7 +42,7 @@ router.get('/:id', catchAsync(async (req, res) => {
     res.render('posts/show', {post: post, formattedDate: postFormattedDate})
 }))
 
-router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
+router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
     const post = await Post.findById(req.params.id)
     if(!post) {
         req.flash('error', 'Post não encontrado!');
@@ -59,9 +51,10 @@ router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
     res.render('posts/edit', {post})
 }))
 
-router.put('/:id', validatePost, catchAsync(async (req, res) => {
+router.put('/:id', isLoggedIn, isAuthor, validatePost, catchAsync(async (req, res) => {
     const {id} = req.params;
     const post = await Post.findByIdAndUpdate(id, {...req.body.post})
+    req.flash('success', 'Post alterado com sucesso!');
     res.redirect(`/posts/${post.id}`);
 }))
 

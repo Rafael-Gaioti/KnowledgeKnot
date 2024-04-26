@@ -18,6 +18,7 @@ const seedDB = async () => {
         const randomDate = generateRandomDate();
 
         const post = new Post ({
+            author: '661d9971bc31b6adb5c43f96',
             title: randomTitle,
             body: randomBody,
             createAt: randomDate,
