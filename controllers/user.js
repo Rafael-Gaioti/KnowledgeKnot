@@ -1,15 +1,11 @@
-const express = require('express');
-const router = express.Router();
 const catchAsync = require('../utils/catchAsync');
-const passport = require('passport');
 const User = require('../models/user');
-const {isLoggedIn, storeReturnTo} = require('../middleware');
 
-router.get('/register', (req, res) => {
-    res.render('users/register')
-})
+module.exports.renderRegisterForm = (req, res) => {
+    res.render('users/register');
+}
 
-router.post('/register', catchAsync(async (req, res, next) => {
+module.exports.registerNewUser = catchAsync(async (req, res, next) => {
     try{
         const { username, email, password } = req.body;
         const user = new User({ username, email });
@@ -23,20 +19,19 @@ router.post('/register', catchAsync(async (req, res, next) => {
         req.flash('error', e.message);
         res.redirect('/register');
     }
-}));
-
-router.get('/login', (req, res) => {
-    res.render('users/login');
 })
 
-router.post('/login', storeReturnTo, passport.authenticate('local', { failureFlash: true, 
-    failureRedirect: '/login'}), (req, res) => {
+module.exports.renderLoginForm = (req, res) => {
+    res.render('users/login');
+}
+
+module.exports.loginUser = (req, res) => {
     req.flash('success', 'Bem vindo a Knowledge-Knot');
     const redirectUrl = res.locals.returnTo || '/posts';
     res.redirect(redirectUrl);
-})
+}
 
-router.get('/logout', isLoggedIn, (req, res) => {
+module.exports.logoutUser = (req, res) => {
     req.logout(function (err) {
         if (err) {
             return next(err);
@@ -45,7 +40,5 @@ router.get('/logout', isLoggedIn, (req, res) => {
             res.redirect('/posts');
         }
     });
-})
-
-module.exports = router;
+}
 

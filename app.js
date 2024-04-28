@@ -11,7 +11,7 @@ const passport = require('passport');
 const localStrategy = require('passport-local');
 const User = require('./models/user');
 
-const userRoutes = require('./routes/user');
+const userRoutes = require('./routes/users');
 const postRoutes = require('./routes/posts');
 const commentRoutes = require('./routes/comments');
 
