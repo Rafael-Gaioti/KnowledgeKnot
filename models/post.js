@@ -2,6 +2,15 @@ const mongoose = require('mongoose');
 const Comment = require('./comment');
 const Schema = mongoose.Schema;
 
+const imageSchema = new Schema({
+    filename: { type: String },
+    url: { type: String }
+})
+
+imageSchema.virtual('thumbnail').get(function(){
+    return this.url.replace('/upload', '/upload/w_250,h_200');
+});
+
 const postSchema = new Schema({
     title: {
         type: String,
@@ -16,6 +25,7 @@ const postSchema = new Schema({
         type: String,
         required: true
     },
+    images: [imageSchema],
     author: {
         type: Schema.Types.ObjectId,
         ref: 'User',
@@ -27,9 +37,9 @@ const postSchema = new Schema({
 })
 
 postSchema.post('findOneAndDelete', async function (doc) {
-    if(doc) {
+    if (doc) {
         await Comment.deleteMany({
-            _id: { 
+            _id: {
                 $in: doc.comments
             }
         })

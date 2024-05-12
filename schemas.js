@@ -5,6 +5,7 @@ module.exports.postSchema = new Joi.object({
         title: Joi.string().required(),
         body: Joi.string().required(),
     }).required(),
+    deleteImages: Joi.array(),
 });
 
 module.exports.commentSchema = new Joi.object({
