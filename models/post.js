@@ -21,6 +21,9 @@ const postSchema = new Schema({
         default: Date.now,
         required: true
     },
+    updatedAt: {
+        type: Date,
+    },
     body: {
         type: String,
         required: true
@@ -33,7 +36,17 @@ const postSchema = new Schema({
     comments: [{
         type: Schema.Types.ObjectId,
         ref: 'Comment'
-    }]
+    }],
+    voters: [{
+        userId: {
+            type: Schema.Types.ObjectId,
+            ref: 'User'
+        },
+        voteType: {
+            type: String,
+            enum: ['upvote', 'downvote']
+        }
+    }],
 })
 
 postSchema.post('findOneAndDelete', async function (doc) {

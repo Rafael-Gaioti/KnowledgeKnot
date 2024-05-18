@@ -4,6 +4,9 @@
     <div class="row col-6 offset-3">
         <div class="post">
             <h1 class="post-title display-6"><%= post.title %></h1>
+            <% if (post.updatedAt) { %>
+                <p class="post-edit-info">Editado em: <%= post.updatedAt.toLocaleString() %></p>
+            <% } %>
             <p class="post-body lead mt-3"><%= post.body %></p>
 
             <div id="postCarousel" class="carousel slide" data-bs-ride="false">
@@ -28,13 +31,46 @@
             </div>
             <p class="post-date text-muted">Criado por <%= post.author.username %> em: <%= formattedDate(post.createAt) %></p>
         </div>
-        <div class="post-actions display-6 mt-3"">
+        <div class="post-actions display-6 mt-3 d-flex align-items-end">
+            <form action="/posts/<%= post.id %>/upvote" method="POST">
+                <button type="submit" class="btn btn-outline-success me-2">
+                    <i class="bi bi-arrow-up"></i>
+                </button>
+            </form>
+            <div class="vote-count me-2">
+                <% 
+                const voteCount = post.voters.reduce((acc, cur) => {
+                    return cur.voteType === 'upvote' ? acc + 1 : acc - 1;
+                }, 0);
+            %>
+            <%= voteCount %> 
+            </div>
+            <form action="/posts/<%= post.id %>/downvote" method="POST" class="me-4">
+                <button type="submit" class="btn btn-outline-danger">
+                    <i class="bi bi-arrow-down"></i> 
+                </button>
+            </form>
+
             <% if( currentUser && post.author.equals(currentUser)) { %>
-            <form action="/posts/<%= post.id %>/delete?_method=DELETE" class="d-inline" method="POST">
+            <form action="/posts/<%= post.id %>/delete?_method=DELETE" class="d-inline me-1" method="POST">
                 <button type="submit" class="btn btn-danger">Deletar</button>
             </form>
-            <a href="/posts/<%= post.id %>/edit" class="btn btn-primary">Editar</a>
+            <div class="d-inline me-1">
+                <a href="/posts/<%= post.id %>/edit" class="btn btn-primary">Editar</a>
+            </div>
             <% } %>
+
+            <button id="shareButton" class="btn btn-secondary">
+                <i class="bi bi-share"></i> 
+            </button>
+
+            <div id="copyMessage" class="alert alert-success copy-message" role="alert">
+                Link copiado!
+            </div>
+
+            <div id="copyErrorMessage" class="alert alert-danger copy-message" role="alert">
+                Falha ao copiar link!
+            </div>
         </div>
     
         <div class="post">
@@ -64,11 +100,10 @@
                 </div>
             </div>
         <% } %>
-
-
     </div>
-
 </div>
+
+<script src="/javascripts/copy-link.js"></script>
 
 
 

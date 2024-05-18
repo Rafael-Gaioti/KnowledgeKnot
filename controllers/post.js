@@ -1,11 +1,8 @@
 const catchAsync = require('../utils/catchAsync');
 const Post = require('../models/post');
 const { cloudinary } = require('../cloudinary');
+const { postFormattedDate, handleVote } = require('../utils/postUtils');
 
-function postFormattedDate(dateString) {
-    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'};
-    return new Date(dateString).toLocaleDateString('pt-PT', options);
-}
 
 module.exports.index = catchAsync(async (req, res) => {
     const posts = await Post.find({}).populate('author');
@@ -50,7 +47,8 @@ module.exports.renderEditForm = catchAsync(async (req, res) => {
 
 module.exports.updatePost = catchAsync(async (req, res) => {
     const {id} = req.params;
-    const post = await Post.findByIdAndUpdate(id, { $set: {...req.body.post}, 
+    const currentDate = new Date;
+    const post = await Post.findByIdAndUpdate(id, { $set: {...req.body.post, updatedAt: currentDate}, 
         $push: {
              images: req.files.map(f => ({ url: f.path, filename: f.filename }))
              }
@@ -64,6 +62,14 @@ module.exports.updatePost = catchAsync(async (req, res) => {
     req.flash('success', 'Post alterado com sucesso!');
     res.redirect(`/posts/${post.id}`);
 })
+
+module.exports.upvote = (req, res) => {
+    handleVote(req, res, 'upvote');
+}
+
+module.exports.downvote = (req, res) => {
+    handleVote(req, res, 'downvote');
+}
 
 module.exports.deletePost = catchAsync(async (req, res) => {
     const {id} = req.params;

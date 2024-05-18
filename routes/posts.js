@@ -18,6 +18,10 @@ router.get('/:id/edit', isLoggedIn, isAuthor, posts.renderEditForm);
 
 router.put('/:id', isLoggedIn, isAuthor, upload.array('image'), validatePost, posts.updatePost);
 
+router.post('/:id/upvote', isLoggedIn, posts.upvote);
+
+router.post('/:id/downvote', isLoggedIn, posts.downvote);
+
 router.delete('/:id/delete', isLoggedIn, posts.deletePost);
 
 module.exports = router;
