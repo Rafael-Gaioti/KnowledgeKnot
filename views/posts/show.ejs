@@ -38,12 +38,7 @@
                 </button>
             </form>
             <div class="vote-count me-2">
-                <% 
-                const voteCount = post.voters.reduce((acc, cur) => {
-                    return cur.voteType === 'upvote' ? acc + 1 : acc - 1;
-                }, 0);
-            %>
-            <%= voteCount %> 
+            <%= post.votes %> 
             </div>
             <form action="/posts/<%= post.id %>/downvote" method="POST" class="me-4">
                 <button type="submit" class="btn btn-outline-danger">

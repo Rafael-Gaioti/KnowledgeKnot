@@ -6,7 +6,7 @@ const multer = require('multer');
 const { storage } = require('../cloudinary');
 const upload = multer({ storage });
 
-router.get('/', posts.index);
+router.get('/', posts.allPosts);
 
 router.get('/new', isLoggedIn, posts.renderNewForm);
 

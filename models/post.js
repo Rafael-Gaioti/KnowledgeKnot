@@ -47,7 +47,19 @@ const postSchema = new Schema({
             enum: ['upvote', 'downvote']
         }
     }],
+    upvotes: {
+        type: Number,
+        default: 0
+    },
+    downvotes: {
+        type: Number,
+        default: 0
+    }
 })
+
+postSchema.virtual('votes').get(function() {
+    return this.upvotes - this.downvotes;
+});
 
 postSchema.post('findOneAndDelete', async function (doc) {
     if (doc) {

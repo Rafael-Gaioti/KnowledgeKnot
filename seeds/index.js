@@ -22,6 +22,9 @@ const seedDB = async () => {
             title: randomTitle,
             body: randomBody,
             createAt: randomDate,
+            upvotes: Math.floor(Math.random() * 100), // Número aleatório de upvotes
+            downvotes: Math.floor(Math.random() * 100) // Número aleatório de downvotes
+
         })
         await post.save();
     }

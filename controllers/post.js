@@ -4,9 +4,43 @@ const { cloudinary } = require('../cloudinary');
 const { postFormattedDate, handleVote } = require('../utils/postUtils');
 
 
-module.exports.index = catchAsync(async (req, res) => {
-    const posts = await Post.find({}).populate('author');
-    res.render('posts/index', {posts: posts, postFormattedDate: postFormattedDate});
+module.exports.allPosts = catchAsync(async (req, res) => {
+    const { sort } = req.query;
+    let posts;
+
+    if(sort === 'mostvoted'){
+        posts = await Post.aggregate([
+            {
+                $addFields: {
+                    votes: { $subtract: ['$upvotes', '$downvotes'] }
+                }
+            },
+            {
+                $sort: { votes: -1 } // Ordenar por votos
+            }, 
+        ]);
+
+        posts = await Post.populate(posts, { path: 'author' });
+    } else {
+        let sortOrder;
+
+        switch (sort) {
+            case 'oldest':
+                sortOrder = { createAt: 1 }; // Mais antigo
+                break;
+            case 'newest':
+                sortOrder = { createAt: -1 }; // Mais recente
+                break;
+            default:
+                sortOrder = { createAt: 1 }; // Ordem padrão (mais antigos)
+                break;
+        }
+
+        posts = await Post.find({}).populate('author').sort(sortOrder);
+
+    }
+
+    res.render('posts/allPosts', { posts: posts, postFormattedDate, sort });
 })
 
 module.exports.renderNewForm = (req, res) => {

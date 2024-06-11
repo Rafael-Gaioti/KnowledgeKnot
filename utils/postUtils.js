@@ -15,12 +15,24 @@ module.exports.handleVote = catchAsync( async (req, res, voteType) => {
 
     if(existingVote) {
         if(existingVote.voteType === voteType) {
-            req.flash('error', 'Já votou neste post!');
-            return res.redirect(`/posts/${post.id}`);
+            if (voteType === 'upvote') {
+                post.upvotes -= 1;
+            } else {
+                post.downvotes -= 1;
+            }
+            post.voters = post.voters.filter(voter => !voter.userId.equals(userId));
 
-        } else if (existingVote.voteType !== voteType) {
+        } else {
+            // Se o utilizador votou de forma diferente, atualiza o voto
+            if (voteType === 'upvote') {
+                post.upvotes += 1;
+                post.downvotes -= 1;
+            } else {
+                post.upvotes -= 1;
+                post.downvotes += 1;
+            }
             existingVote.voteType = voteType;
-        } 
+        }
     } else {
         post.voters.push({ userId, voteType });
     }
