@@ -1,15 +1,26 @@
-<% layout('layouts/boilerplate') %>
+<% layout('layouts/boilerplate')%>
 
-<h1>Login</h1>
+<div class="container d-flex justify-content-center align-items-center mt-5">
+    <div class="row">
+        <div class="col-md-6 offset-md-3 col-xl-4 offset-xl-4">
+            <div class="card shadow">
+                <img src="https://images.unsplash.com/photo-1589561253831-b8421dd58261?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    alt="" class="card-img-top" />
+                <div class="card-body">
+                    <form action="/login" method="POST" class="validated-form" novalidate>
+                        <div class="mb-3">
+                            <label class="form-label" for="username">Username</label>
+                            <input class="form-control" type="text" id="username" name="username" autofocus required>
+                        </div>
 
-<form action="/login" method="POST" class="validate-form" novalidate>
-    <div class="mb-3">
-        <label class="form-label" for="username">username</label>
-        <input class="form-control" type="text" id="username" name="username" required="true">
+                        <div class="mb-3">
+                            <label class="form-label" for="password">Password</label>
+                            <input class="form-control" type="password" id="password" name="password" required>
+                        </div>
+                        <button class="btn btn-success btn-block">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="mb-3">
-        <label class="form-label" for="password">password</label>
-        <input class="form-control" type="password" id="password" name="password" required="true">
-    </div>
-    <button class="btn btn-success">Login</button>
-</form>
+</div>

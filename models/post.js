@@ -54,7 +54,8 @@ const postSchema = new Schema({
     downvotes: {
         type: Number,
         default: 0
-    }
+    },
+    tags: [String]
 })
 
 postSchema.virtual('votes').get(function() {

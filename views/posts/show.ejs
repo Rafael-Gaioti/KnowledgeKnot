@@ -30,6 +30,11 @@
                 <% } %>
             </div>
             <p class="post-date text-muted">Criado por <%= post.author.username %> em: <%= formattedDate(post.createAt) %></p>
+            <div class="mt-2">
+                <% for (let tag of post.tags) { %>
+                    <span class="badge bg-secondary">#<%= tag %></span>
+                <% } %>
+            </div>
         </div>
         <div class="post-actions display-6 mt-3 d-flex align-items-end">
             <form action="/posts/<%= post.id %>/upvote" method="POST">

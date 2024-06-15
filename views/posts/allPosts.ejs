@@ -3,7 +3,7 @@
 <div class="container">
     <h1 class="mt-5 mb-4">Posts</h1>
     
-    <form id="filterForm" action="/posts" method="get" class="mb-3">
+    <form id="filterForm" action="/posts" method="get" class="mb-3 mw-60">
         <div class="row">
             <div class="col-md-4">
                 <label for="sort" class="form-label">Ordenar por</label>
@@ -29,9 +29,13 @@
                 <div class="d-flex w-100 justify-content-between">
                     <h5 class="mb-1"><%= post.title %></h5>
                 </div>
-                <p><%= post.votes  %></p>
                 <p class="mb-1"><%= post.body %></p>
                 <small>Postado por <%= post.author.username %> em <%= postFormattedDate(post.createAt) %></small>
+                <div class="mt-2">
+                    <% for (let tag of post.tags) { %>
+                        <span class="badge bg-secondary">#<%= tag %></span>
+                    <% } %>
+                </div>
             </a>
         <% } %>
     </div>

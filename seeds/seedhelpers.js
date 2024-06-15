@@ -24,6 +24,14 @@ const bodies = [
     "Alguém já enfrentou este problema antes?"
 ];
 
+const tags = ['technology', 'science', 'health', 'travel', 'food', 'education', 
+    'sports', 'entertainment', 'news', 'lifestyle'];
+
+function getRandomTags(num) {
+    const shuffled = tags.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, num);
+}
+
 function generateRandomDate() {
     const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
     return new Date(thirtyDaysAgo + Math.random() * (Date.now() - thirtyDaysAgo));
@@ -32,6 +40,7 @@ function generateRandomDate() {
 
 module.exports = {
     generateRandomDate: generateRandomDate,
+    getRandomTags: getRandomTags,
     titles: titles,
     bodies: bodies,
 }

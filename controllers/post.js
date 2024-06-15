@@ -5,9 +5,10 @@ const { postFormattedDate, handleVote } = require('../utils/postUtils');
 
 
 module.exports.allPosts = catchAsync(async (req, res) => {
-    const { sort } = req.query;
+    const { sort, tag } = req.query;
     let posts;
-
+    let filter = {};
+    
     if(sort === 'mostvoted'){
         posts = await Post.aggregate([
             {
@@ -36,7 +37,11 @@ module.exports.allPosts = catchAsync(async (req, res) => {
                 break;
         }
 
-        posts = await Post.find({}).populate('author').sort(sortOrder);
+        if(tag) {
+            filter = { tags: tag }
+        }
+
+        posts = await Post.find(filter).populate('author').sort(sortOrder);
 
     }
 
